@@ -875,6 +875,17 @@ pygments = ">=2.13.0,<3.0.0"
 jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
+name = "scons"
+version = "4.8.1"
+description = "Open Source next-generation build tool."
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "SCons-4.8.1-py3-none-any.whl", hash = "sha256:a4c3b434330e2d7d975002fd6783284ba348bf394db94c8f83fdc5bf69cdb8d7"},
+    {file = "scons-4.8.1.tar.gz", hash = "sha256:5b641357904d2f56f7bfdbb37e165ab996b6143c948b9df0efc7305f54949daa"},
+]
+
+[[package]]
 name = "shellingham"
 version = "1.5.4"
 description = "Tool to Detect Surrounding Shell"
@@ -1317,4 +1328,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "4fe55051ce1cda222ddc28a6647b363e3807af0a302b67b5a04e3874e23c42d0"
+content-hash = "04b1c33f7e13c7f6198cc49b31350044064dc91eada9d6d42a769d5bd97e38eb"
