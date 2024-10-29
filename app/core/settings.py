@@ -42,6 +42,13 @@ class DatabaseSettings(DatabaseBaseSettings):
     pass
 
 
+class AuthJWT(BaseModel):
+    private_key_path: Path = BASE_DIR / "certificates" / "private.pem"
+    public_key_path: Path = BASE_DIR / "certificates" / "public.pem"
+    algorithm: str = "RS256"
+    access_token_expire_minutes: int = 15
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -51,6 +58,7 @@ class Settings(BaseSettings):
     )
     api_version_prefix: str = "/api/v1"
     database: DatabaseSettings
+    auth_jwt: AuthJWT = AuthJWT()
 
 
 settings = Settings()
