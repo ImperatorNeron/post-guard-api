@@ -17,6 +17,7 @@ from app.models.mixins import (
     IdIntPkMixin,
     UpdateCreateDateTimeMixin,
 )
+from app.schemas.users import ReadUserWithPasswordSchema
 
 
 if TYPE_CHECKING:
@@ -76,3 +77,18 @@ class User(
         "Comment",
         back_populates="user",
     )
+
+    def to_read_model(self):
+        return ReadUserWithPasswordSchema(
+            id=self.id,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+            email=self.email,
+            username=self.username,
+            is_verified=self.is_verified,
+            is_active=self.is_active,
+            is_superuser=self.is_superuser,
+            is_auto_reply_enabled=self.is_auto_reply_enabled,
+            auto_reply_delay=self.auto_reply_delay,
+            hashed_password=self.hashed_password,
+        )

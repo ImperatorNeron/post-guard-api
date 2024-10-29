@@ -17,6 +17,7 @@ from app.models.mixins import (
     IdIntPkMixin,
     UpdateCreateDateTimeMixin,
 )
+from app.schemas.posts import ReadPostSchema
 
 
 if TYPE_CHECKING:
@@ -44,4 +45,19 @@ class Post(
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
     user: Mapped["User"] = relationship("User", back_populates="posts")
-    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="post")
+    comments: Mapped[list["Comment"]] = relationship(
+        "Comment",
+        back_populates="post",
+    )
+
+    def to_read_model(self):
+        return ReadPostSchema(
+            id=self.id,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+            title=self.title,
+            content=self.content,
+            is_blocked=self.is_blocked,
+            blocked_reason=self.blocked_reason,
+            user_id=self.user_id,
+        )

@@ -17,6 +17,7 @@ from app.models.mixins import (
     IdIntPkMixin,
     UpdateCreateDateTimeMixin,
 )
+from app.schemas.comments import ReadCommentSchema
 
 
 if TYPE_CHECKING:
@@ -45,3 +46,15 @@ class Comment(
 
     user: Mapped["User"] = relationship("User", back_populates="comments")
     post: Mapped["Post"] = relationship("Post", back_populates="comments")
+
+    def to_read_model(self):
+        return ReadCommentSchema(
+            id=self.id,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+            content=self.content,
+            is_blocked=self.is_blocked,
+            blocked_reason=self.blocked_reason,
+            user_id=self.user_id,
+            post_id=self.post_id,
+        )
