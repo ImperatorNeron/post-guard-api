@@ -51,3 +51,11 @@ class ReadUserSchema(BaseUserSchema):
 
 class ReadUserWithPasswordSchema(ReadUserSchema):
     hashed_password: bytes
+
+
+class RegisterUserSchema(BaseUserSchema):
+    password: str
+
+
+class CreateUserSchema(BaseUserSchema):
+    hashed_password: bytes
