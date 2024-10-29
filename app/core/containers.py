@@ -10,6 +10,7 @@ from app.services.tokens import (
     AbstractJWTTokenService,
     JWTTokenService,
 )
+from app.use_cases.auth.login import LoginUserUseCase
 from app.use_cases.auth.registration import RegisterUserUseCase
 
 
@@ -27,5 +28,6 @@ def _initialize_container() -> punq.Container:
 
     # Use cases
     container.register(RegisterUserUseCase)
+    container.register(LoginUserUseCase)
 
     return container

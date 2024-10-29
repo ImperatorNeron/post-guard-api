@@ -59,3 +59,8 @@ class RegisterUserSchema(BaseUserSchema):
 
 class CreateUserSchema(BaseUserSchema):
     hashed_password: bytes
+
+
+class LoginUserSchema(BaseModel):
+    username: str = Field(max_length=50)
+    password: str = Field(max_length=255)
