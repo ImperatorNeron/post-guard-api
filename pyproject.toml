@@ -18,6 +18,7 @@ asyncpg = "^0.30.0"
 punq = "^0.7.0"
 pyjwt = "^2.9.0"
 bcrypt = "^4.2.0"
+python-multipart = "^0.0.16"
 
 
 [tool.poetry.group.dev.dependencies]
