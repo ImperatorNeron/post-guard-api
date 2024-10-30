@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from app.schemas.posts import (
     CreatePostWithUserSchema,
     ReadPostSchema,
+    UpdatePostSchema,
 )
 from app.utils.unit_of_work import AbstractUnitOfWork
 
@@ -48,6 +49,14 @@ class AbstractPostService(ABC):
         uow: AbstractUnitOfWork,
     ) -> None: ...
 
+    @abstractmethod
+    async def update_post_by_id(
+        self,
+        post_id: int,
+        post_in: BaseModel,
+        uow: AbstractUnitOfWork,
+    ) -> BaseModel: ...
+
 
 class PostService(AbstractPostService):
 
@@ -83,6 +92,17 @@ class PostService(AbstractPostService):
         self,
         post_id: int,
         uow: AbstractUnitOfWork,
-    ):
+    ) -> None:
         async with uow:
-            return await uow.posts.remove_by_id(item_id=post_id)
+            await uow.posts.remove_by_id(item_id=post_id)
+
+    async def update_post_by_id(
+        self,
+        post_id: int,
+        post_in: UpdatePostSchema,
+        uow: AbstractUnitOfWork,
+    ) -> ReadPostSchema:
+        return await uow.posts.update_by_id(
+            item_id=post_id,
+            item_in=post_in,
+        )

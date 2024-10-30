@@ -23,6 +23,11 @@ class CreatePostWithUserSchema(BasePostSchema):
     )
 
 
+class UpdatePostSchema(BasePostSchema):
+    title: Optional[str] = None
+    content: Optional[str] = None
+
+
 class ModeratePostSchema(BasePostSchema):
     is_blocked: bool = Field(
         default=False,
