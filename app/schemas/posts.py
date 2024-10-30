@@ -11,6 +11,19 @@ from pydantic import (
 class BasePostSchema(BaseModel):
     title: str = Field(max_length=150, title="Title of the post")
     content: str = Field(title="Content of the post")
+
+
+class CreatePostSchema(BasePostSchema):
+    pass
+
+
+class CreatePostWithUserSchema(BasePostSchema):
+    user_id: PositiveInt = Field(
+        title="ID of the user who made the post",
+    )
+
+
+class ModeratePostSchema(BasePostSchema):
     is_blocked: bool = Field(
         default=False,
         title="Indicates if the post is blocked",
@@ -22,7 +35,7 @@ class BasePostSchema(BaseModel):
     )
 
 
-class ReadPostSchema(BasePostSchema):
+class ReadPostSchema(ModeratePostSchema):
     id: PositiveInt = Field(title="Unique identifier")  # noqa
     user_id: PositiveInt = Field(
         title="ID of the user who made the post",

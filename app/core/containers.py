@@ -6,13 +6,21 @@ from app.services.auth import (
     AbstractAuthService,
     AuthService,
 )
+from app.services.posts import (
+    AbstractPostService,
+    PostService,
+)
 from app.services.tokens import (
     AbstractJWTTokenService,
     JWTTokenService,
 )
-from app.services.users import AbstractUserService, UserService
+from app.services.users import (
+    AbstractUserService,
+    UserService,
+)
 from app.use_cases.auth.login import LoginUserUseCase
 from app.use_cases.auth.registration import RegisterUserUseCase
+from app.use_cases.posts.create import CreatePostUseCase
 from app.use_cases.users.profile import GetCurrentUserProfileUseCase
 
 
@@ -27,11 +35,13 @@ def _initialize_container() -> punq.Container:
     # Services
     container.register(AbstractAuthService, AuthService)
     container.register(AbstractUserService, UserService)
+    container.register(AbstractPostService, PostService)
     container.register(AbstractJWTTokenService, JWTTokenService)
 
     # Use cases
     container.register(RegisterUserUseCase)
     container.register(LoginUserUseCase)
     container.register(GetCurrentUserProfileUseCase)
+    container.register(CreatePostUseCase)
 
     return container
