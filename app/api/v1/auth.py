@@ -27,10 +27,6 @@ from app.utils.unit_of_work import (
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/api/v1/auth/login/",
-)
-
 
 @router.post(
     "/register",
