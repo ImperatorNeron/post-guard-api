@@ -16,6 +16,7 @@ from app.schemas.posts import (
 )
 from app.services.posts import AbstractPostService
 from app.use_cases.posts.create import CreatePostUseCase
+from app.use_cases.posts.delete import DeletePostUseCase
 from app.utils.unit_of_work import (
     AbstractUnitOfWork,
     UnitOfWork,
@@ -51,3 +52,14 @@ async def create_post(
     return ApiResponseSchema(
         data=await use_case.execute(uow=uow, post_in=post_in, token=token),
     )
+
+
+@router.delete("/posts")
+async def delete_post(
+    container: Annotated[Container, Depends(get_container)],
+    post_id: int,
+    uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+):
+    use_case: DeletePostUseCase = container.resolve(DeletePostUseCase)
+    return await use_case.execute(uow=uow, post_id=post_id, token=token)
