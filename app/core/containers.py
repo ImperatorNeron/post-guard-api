@@ -21,6 +21,7 @@ from app.services.users import (
 from app.use_cases.auth.login import LoginUserUseCase
 from app.use_cases.auth.registration import RegisterUserUseCase
 from app.use_cases.posts.create import CreatePostUseCase
+from app.use_cases.posts.current_user_posts import GetUserPostsUseCase
 from app.use_cases.posts.delete import DeletePostUseCase
 from app.use_cases.users.profile import GetCurrentUserProfileUseCase
 
@@ -45,5 +46,6 @@ def _initialize_container() -> punq.Container:
     container.register(GetCurrentUserProfileUseCase)
     container.register(CreatePostUseCase)
     container.register(DeletePostUseCase)
+    container.register(GetUserPostsUseCase)
 
     return container

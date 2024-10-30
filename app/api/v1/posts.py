@@ -1,9 +1,6 @@
 from typing import Annotated
 
-from fastapi import (
-    APIRouter,
-    Depends,
-)
+from fastapi import APIRouter, Depends
 
 from punq import Container
 
@@ -16,6 +13,7 @@ from app.schemas.posts import (
 )
 from app.services.posts import AbstractPostService
 from app.use_cases.posts.create import CreatePostUseCase
+from app.use_cases.posts.current_user_posts import GetUserPostsUseCase
 from app.use_cases.posts.delete import DeletePostUseCase
 from app.utils.unit_of_work import (
     AbstractUnitOfWork,
@@ -23,11 +21,11 @@ from app.utils.unit_of_work import (
 )
 
 
-router = APIRouter(prefix="/users", tags=["Posts"])
+router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
 @router.get(
-    "/posts",
+    "/",
     response_model=ApiResponseSchema[list[ReadPostSchema]],
 )
 async def get_posts(
@@ -39,7 +37,7 @@ async def get_posts(
 
 
 @router.post(
-    "/posts",
+    "/",
     response_model=ApiResponseSchema[ReadPostSchema],
 )
 async def create_post(
@@ -54,7 +52,7 @@ async def create_post(
     )
 
 
-@router.delete("/posts")
+@router.delete("/")
 async def delete_post(
     container: Annotated[Container, Depends(get_container)],
     post_id: int,
@@ -63,3 +61,21 @@ async def delete_post(
 ):
     use_case: DeletePostUseCase = container.resolve(DeletePostUseCase)
     return await use_case.execute(uow=uow, post_id=post_id, token=token)
+
+
+@router.get(
+    "/me",
+    response_model=ApiResponseSchema[list[ReadPostSchema]],
+)
+async def get_current_user_posts(
+    container: Annotated[Container, Depends(get_container)],
+    uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+):
+    use_case: GetUserPostsUseCase = container.resolve(GetUserPostsUseCase)
+    return ApiResponseSchema(
+        data=await use_case.execute(
+            uow=uow,
+            token=token,
+        )
+    )

@@ -22,6 +22,13 @@ class AbstractPostService(ABC):
     ) -> BaseModel: ...
 
     @abstractmethod
+    async def get_posts_by_user_id(
+        self,
+        user_id: int,
+        uow: AbstractUnitOfWork,
+    ) -> list[BaseModel]: ...
+
+    @abstractmethod
     async def get_active_posts(
         self,
         uow: AbstractUnitOfWork,
@@ -50,6 +57,13 @@ class PostService(AbstractPostService):
         uow: AbstractUnitOfWork,
     ) -> ReadPostSchema:
         return await uow.posts.fetch_by_id(post_id)
+
+    async def get_posts_by_user_id(
+        self,
+        user_id: int,
+        uow: AbstractUnitOfWork,
+    ) -> list[ReadPostSchema]:
+        return await uow.posts.fetch_by_attributes(user_id=user_id)
 
     async def get_active_posts(
         self,
