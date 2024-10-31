@@ -28,7 +28,7 @@ class GetCommentsByPostUseCase:
             if post is None:
                 raise PostNotFoundError(post_id)
 
-            return await self.comment_service.get_comments_by_post_id(
+            return await self.comment_service.get_active_comments_by_post_id(
                 uow=uow,
                 post_id=post_id,
             )
