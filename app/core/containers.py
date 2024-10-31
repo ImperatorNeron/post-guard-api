@@ -6,6 +6,10 @@ from app.services.auth import (
     AbstractAuthService,
     AuthService,
 )
+from app.services.moderation import (
+    AbstractModerationService,
+    AIModerationService,
+)
 from app.services.posts import (
     AbstractPostService,
     PostService,
@@ -39,6 +43,7 @@ def _initialize_container() -> punq.Container:
     container.register(AbstractAuthService, AuthService)
     container.register(AbstractUserService, UserService)
     container.register(AbstractPostService, PostService)
+    container.register(AbstractModerationService, AIModerationService)
     container.register(AbstractJWTTokenService, JWTTokenService)
 
     # Use cases

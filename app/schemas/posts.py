@@ -29,6 +29,9 @@ class UpdatePostSchema(BasePostSchema):
 
 
 class ModeratePostSchema(BasePostSchema):
+    user_id: PositiveInt = Field(
+        title="ID of the user who made the post",
+    )
     is_blocked: bool = Field(
         default=False,
         title="Indicates if the post is blocked",
