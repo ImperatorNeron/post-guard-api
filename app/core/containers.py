@@ -6,6 +6,10 @@ from app.services.auth import (
     AbstractAuthService,
     AuthService,
 )
+from app.services.comments import (
+    AbstractCommentService,
+    CommentService,
+)
 from app.services.moderation import (
     AbstractModerationService,
     AIModerationService,
@@ -24,6 +28,7 @@ from app.services.users import (
 )
 from app.use_cases.auth.login import LoginUserUseCase
 from app.use_cases.auth.registration import RegisterUserUseCase
+from app.use_cases.comments.comments_by_post import GetCommentsByPostUseCase
 from app.use_cases.posts.create import CreatePostUseCase
 from app.use_cases.posts.current_user_posts import GetUserPostsUseCase
 from app.use_cases.posts.delete import DeletePostUseCase
@@ -43,6 +48,7 @@ def _initialize_container() -> punq.Container:
     container.register(AbstractAuthService, AuthService)
     container.register(AbstractUserService, UserService)
     container.register(AbstractPostService, PostService)
+    container.register(AbstractCommentService, CommentService)
     container.register(AbstractModerationService, AIModerationService)
     container.register(AbstractJWTTokenService, JWTTokenService)
 
@@ -54,5 +60,6 @@ def _initialize_container() -> punq.Container:
     container.register(DeletePostUseCase)
     container.register(GetUserPostsUseCase)
     container.register(UpdatePostUseCase)
+    container.register(GetCommentsByPostUseCase)
 
     return container
