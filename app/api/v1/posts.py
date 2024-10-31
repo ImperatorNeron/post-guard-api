@@ -38,7 +38,9 @@ async def get_posts(
     uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
 ):
     posts_service: AbstractPostService = container.resolve(AbstractPostService)
-    return ApiResponseSchema(data=await posts_service.get_active_posts(uow))
+    return ApiResponseSchema(
+        data=await posts_service.get_active_posts(uow),
+    )
 
 
 @router.post(
@@ -53,7 +55,11 @@ async def create_post(
 ):
     use_case: CreatePostUseCase = container.resolve(CreatePostUseCase)
     return ApiResponseSchema(
-        data=await use_case.execute(uow=uow, post_in=post_in, token=token),
+        data=await use_case.execute(
+            uow=uow,
+            post_in=post_in,
+            token=token,
+        ),
     )
 
 
@@ -87,7 +93,11 @@ async def delete_post(
     token: Annotated[str, Depends(oauth2_scheme)],
 ):
     use_case: DeletePostUseCase = container.resolve(DeletePostUseCase)
-    return await use_case.execute(uow=uow, post_id=post_id, token=token)
+    return await use_case.execute(
+        uow=uow,
+        post_id=post_id,
+        token=token,
+    )
 
 
 @router.get(

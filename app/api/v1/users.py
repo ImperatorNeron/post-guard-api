@@ -1,12 +1,20 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends
+
+from fastapi import (
+    APIRouter,
+    Depends,
+)
+
 from punq import Container
 
+from app.api.v1.dependencies import oauth2_scheme
 from app.core.containers import get_container
 from app.schemas.users import ReadUserSchema
-from app.use_cases.users.profile import GetCurrentUserProfileUseCase
-from app.utils.unit_of_work import AbstractUnitOfWork, UnitOfWork
-from app.api.v1.dependencies import oauth2_scheme
+from app.use_cases.users.personal_profile import GetCurrentUserProfileUseCase
+from app.utils.unit_of_work import (
+    AbstractUnitOfWork,
+    UnitOfWork,
+)
 
 
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -24,4 +32,7 @@ async def get_authenticated_user_profile(
     use_case: GetCurrentUserProfileUseCase = container.resolve(
         GetCurrentUserProfileUseCase,
     )
-    return await use_case.execute(token=token, uow=uow)
+    return await use_case.execute(
+        token=token,
+        uow=uow,
+    )

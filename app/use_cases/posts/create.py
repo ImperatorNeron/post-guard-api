@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from jwt import InvalidTokenError
-
 from app.schemas.posts import (
     CreatePostSchema,
     CreatePostWithUserSchema,
@@ -23,13 +21,9 @@ class CreatePostUseCase:
         post_in: CreatePostSchema,
         token: str,
     ):
-        try:
-            payload = await self.token_service.decode_jwt(token=token)
-        except InvalidTokenError as e:
-            # TODO: Custom exception
-            raise ValueError(f"Invalid token error: {e}")
-
+        payload = await self.token_service.decode_jwt(token=token)
         pk = payload.get("sub")
+
         async with uow:
             post = CreatePostWithUserSchema(
                 **post_in.model_dump(),

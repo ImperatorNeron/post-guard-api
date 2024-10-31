@@ -24,7 +24,7 @@ from app.use_cases.posts.create import CreatePostUseCase
 from app.use_cases.posts.current_user_posts import GetUserPostsUseCase
 from app.use_cases.posts.delete import DeletePostUseCase
 from app.use_cases.posts.update import UpdatePostUseCase
-from app.use_cases.users.profile import GetCurrentUserProfileUseCase
+from app.use_cases.users.personal_profile import GetCurrentUserProfileUseCase
 
 
 @lru_cache(1)

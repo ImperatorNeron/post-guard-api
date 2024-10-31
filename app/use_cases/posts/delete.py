@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
-from jwt import InvalidTokenError
-
+from app.exceptions.posts import PostNotFoundError
 from app.schemas.posts import ReadPostSchema
 from app.services.posts import AbstractPostService
 from app.services.tokens import AbstractJWTTokenService
@@ -20,13 +19,7 @@ class DeletePostUseCase:
         post_id: int,
         token: str,
     ):
-        # TODO: do this in apart file
-        try:
-            payload = await self.token_service.decode_jwt(token=token)
-        except InvalidTokenError as e:
-            # TODO: Custom exception
-            raise ValueError(f"Invalid token error: {e}")
-
+        payload = await self.token_service.decode_jwt(token=token)
         pk = payload.get("sub")
 
         async with uow:
@@ -34,9 +27,8 @@ class DeletePostUseCase:
                 post_id=post_id,
                 uow=uow,
             )
-            if post.user_id != pk:
-                # TODO: custome error
-                raise ValueError("Wrong post")
+            if post is None or post.user_id != pk:
+                raise PostNotFoundError(post_id=post_id)
             await self.post_service.delete_post_by_id(
                 post_id=post_id,
                 uow=uow,

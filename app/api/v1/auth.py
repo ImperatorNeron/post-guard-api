@@ -5,7 +5,6 @@ from fastapi import (
     Depends,
     Form,
 )
-from fastapi.security import OAuth2PasswordBearer
 
 from punq import Container
 
@@ -38,8 +37,12 @@ async def register(
     uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
 ):
     use_case: RegisterUserUseCase = container.resolve(RegisterUserUseCase)
-    result = await use_case.execute(user_in=user_in, uow=uow)
-    return ApiResponseSchema(data=result)
+    return ApiResponseSchema(
+        data=await use_case.execute(
+            user_in=user_in,
+            uow=uow,
+        ),
+    )
 
 
 @router.post(

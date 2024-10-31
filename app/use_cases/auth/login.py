@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from app.exceptions.auth import InvalidCredentialsError
+from app.exceptions.users import UserWasNotFoundError
 from app.schemas.tokens import TokenInfoSchema
 from app.schemas.users import (
     LoginUserSchema,
@@ -26,9 +28,8 @@ class LoginUserUseCase:
             username=username,
         )
 
-        # TODO: custom error
         if not user:
-            raise ValueError("User wasn`t found")
+            raise UserWasNotFoundError()
 
         return user
 
@@ -70,7 +71,7 @@ class LoginUserUseCase:
                 user_in.password,
                 user.hashed_password,
             ):
-                raise ValueError("Invalid credentials")
+                raise InvalidCredentialsError()
 
             return await self.__generate_token(
                 pk=user.id,

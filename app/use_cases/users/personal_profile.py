@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from jwt import InvalidTokenError
-
 from app.schemas.users import ReadUserSchema
 from app.services.tokens import AbstractJWTTokenService
 from app.services.users import AbstractUserService
@@ -15,12 +13,7 @@ class GetCurrentUserProfileUseCase:
     token_service: AbstractJWTTokenService
 
     async def execute(self, token: str, uow: AbstractUnitOfWork) -> ReadUserSchema:
-        try:
-            payload = await self.token_service.decode_jwt(token=token)
-        except InvalidTokenError as e:
-            # TODO: Custom exception
-            raise ValueError(f"Invalid token error: {e}")
-
+        payload = await self.token_service.decode_jwt(token=token)
         pk = payload.get("sub")
 
         async with uow:

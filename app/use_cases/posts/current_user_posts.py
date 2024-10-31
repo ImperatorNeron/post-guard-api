@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from jwt import InvalidTokenError
-
 from app.schemas.posts import ReadPostSchema
 from app.services.posts import AbstractPostService
 from app.services.tokens import AbstractJWTTokenService
@@ -19,12 +17,7 @@ class GetUserPostsUseCase:
         uow: AbstractUnitOfWork,
         token: str,
     ) -> list[ReadPostSchema]:
-        try:
-            payload = await self.token_service.decode_jwt(token=token)
-        except InvalidTokenError as e:
-            # TODO: Custom exception
-            raise ValueError(f"Invalid token error: {e}")
-
+        payload = await self.token_service.decode_jwt(token=token)
         pk = payload.get("sub")
 
         async with uow:

@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 
-from jwt import InvalidTokenError
-
+from app.exceptions.posts import (
+    PostBlockedError,
+    PostNotFoundError,
+)
 from app.schemas.posts import (
     ReadPostSchema,
     UpdatePostSchema,
@@ -24,13 +26,7 @@ class UpdatePostUseCase:
         post_in: UpdatePostSchema,
         token: str,
     ):
-        # TODO: do this in apart file
-        try:
-            payload = await self.token_service.decode_jwt(token=token)
-        except InvalidTokenError as e:
-            # TODO: Custom exception
-            raise ValueError(f"Invalid token error: {e}")
-
+        payload = await self.token_service.decode_jwt(token=token)
         pk = payload.get("sub")
 
         async with uow:
@@ -38,11 +34,13 @@ class UpdatePostUseCase:
                 post_id=post_id,
                 uow=uow,
             )
-            # TODO: custome error
+
             if post is None or post.user_id != pk:
-                raise ValueError("Wrong post")
+                raise PostNotFoundError(post_id=post_id)
+
             if post.is_blocked:
-                raise ValueError("This post was blocked and cannot be changed!")
+                raise PostBlockedError(post_id=post_id)
+
             return await self.post_service.update_post_by_id(
                 post_id=post_id,
                 post_in=post_in,

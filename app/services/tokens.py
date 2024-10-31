@@ -12,6 +12,7 @@ import bcrypt
 import jwt
 
 from app.core.settings import settings
+from app.exceptions.auth import InvalidJWTTokenError
 
 
 class AbstractJWTTokenService(ABC):
@@ -75,9 +76,8 @@ class JWTTokenService:
         try:
             payload = jwt.decode(token, public_key, [algorithm])
             return payload
-        # TODO: Add custom exception
-        except BaseException as e:
-            print(e)
+        except jwt.InvalidTokenError as e:
+            raise InvalidJWTTokenError(e)
 
     @staticmethod
     async def hash_password(password: str) -> bytes:
