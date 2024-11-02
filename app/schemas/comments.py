@@ -16,6 +16,10 @@ class CreateCommentSchema(BaseCommentSchema):
     pass
 
 
+class UpdateCommentSchema(BaseModel):
+    content: Optional[str] = None
+
+
 class CreateCommentByPostSchema(CreateCommentSchema):
     user_id: PositiveInt = Field(
         title="ID of the user who made the comment",

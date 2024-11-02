@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from app.schemas.comments import (
     BaseCommentSchema,
     ReadCommentSchema,
+    UpdateCommentSchema,
 )
 from app.utils.unit_of_work import AbstractUnitOfWork
 
@@ -40,6 +41,14 @@ class AbstractCommentService(ABC):
         self,
         uow: AbstractUnitOfWork,
         comment_id: int,
+    ) -> ReadCommentSchema: ...
+
+    @abstractmethod
+    async def update_comment_by_id(
+        self,
+        uow: AbstractUnitOfWork,
+        comment_id: int,
+        comment_in: UpdateCommentSchema,
     ) -> ReadCommentSchema: ...
 
     @abstractmethod
@@ -85,9 +94,20 @@ class CommentService(AbstractCommentService):
     ) -> ReadCommentSchema:
         return await uow.comments.fetch_by_id(item_id=comment_id)
 
+    async def update_comment_by_id(
+        self,
+        uow: AbstractUnitOfWork,
+        comment_id: int,
+        comment_in: UpdateCommentSchema,
+    ) -> ReadCommentSchema:
+        return await uow.comments.update_by_id(
+            item_id=comment_id,
+            item_in=comment_in,
+        )
+
     async def delete_comment_by_id(
         self,
         uow: AbstractUnitOfWork,
         comment_id: int,
     ) -> None:
-        return await uow.comments.remove_by_id(item_id=comment_id)
+        await uow.comments.remove_by_id(item_id=comment_id)

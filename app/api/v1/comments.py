@@ -13,11 +13,13 @@ from app.schemas.api_response import ApiResponseSchema
 from app.schemas.comments import (
     CreateCommentSchema,
     ReadCommentSchema,
+    UpdateCommentSchema,
 )
 from app.use_cases.comments.comments_by_post import GetCommentsByPostUseCase
 from app.use_cases.comments.create import CreateCommentUseCase
 from app.use_cases.comments.current_user_comments import GetUserCommentsUseCase
 from app.use_cases.comments.delete import DeleteCommentUseCase
+from app.use_cases.comments.update import UpdateCommentUseCase
 from app.utils.unit_of_work import (
     AbstractUnitOfWork,
     UnitOfWork,
@@ -81,6 +83,28 @@ async def get_current_user_comments(
         data=await use_case.execute(
             uow=uow,
             token=token,
+        ),
+    )
+
+
+@router.patch(
+    "/{comment_id}",
+    response_model=ApiResponseSchema[ReadCommentSchema],
+)
+async def update_current_user_comments(
+    comment_id: int,
+    comment_in: UpdateCommentSchema,
+    container: Annotated[Container, Depends(get_container)],
+    uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+):
+    use_case: UpdateCommentUseCase = container.resolve(UpdateCommentUseCase)
+    return ApiResponseSchema(
+        data=await use_case.execute(
+            uow=uow,
+            token=token,
+            comment_in=comment_in,
+            comment_id=comment_id,
         ),
     )
 
