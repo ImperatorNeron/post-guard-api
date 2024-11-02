@@ -2,6 +2,8 @@ from abc import (
     ABC,
     abstractmethod,
 )
+from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -58,6 +60,15 @@ class AbstractCommentService(ABC):
         comment_id: int,
     ) -> None: ...
 
+    @abstractmethod
+    async def get_comments_daily_breakdown(
+        self,
+        uow: AbstractUnitOfWork,
+        date_from: datetime,
+        date_to: datetime,
+        user_id: Optional[int] = None,
+    ): ...
+
 
 class CommentService(AbstractCommentService):
 
@@ -111,3 +122,17 @@ class CommentService(AbstractCommentService):
         comment_id: int,
     ) -> None:
         await uow.comments.remove_by_id(item_id=comment_id)
+
+    async def get_comments_daily_breakdown(
+        self,
+        uow: AbstractUnitOfWork,
+        date_from: datetime,
+        date_to: datetime,
+        user_id: Optional[int] = None,
+    ):
+        async with uow:
+            return await uow.comments.get_comments_daily_breakdown(
+                date_from=date_from,
+                date_to=date_to,
+                user_id=user_id,
+            )
