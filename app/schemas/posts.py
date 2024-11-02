@@ -45,9 +45,6 @@ class ModeratePostSchema(BasePostSchema):
 
 class ReadPostSchema(ModeratePostSchema):
     id: PositiveInt = Field(title="Unique identifier")  # noqa
-    user_id: PositiveInt = Field(
-        title="ID of the user who made the post",
-    )
     created_at: datetime = Field(
         title="Timestamp when the post was created",
     )

@@ -19,6 +19,7 @@ from app.services.posts import AbstractPostService
 from app.use_cases.posts.create import CreatePostUseCase
 from app.use_cases.posts.current_user_posts import GetUserPostsUseCase
 from app.use_cases.posts.delete import DeletePostUseCase
+from app.use_cases.posts.get_post import GetPostUseCase
 from app.use_cases.posts.update import UpdatePostUseCase
 from app.utils.unit_of_work import (
     AbstractUnitOfWork,
@@ -27,6 +28,24 @@ from app.utils.unit_of_work import (
 
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
+
+
+@router.get(
+    "/me",
+    response_model=ApiResponseSchema[list[ReadPostSchema]],
+)
+async def get_current_user_posts(
+    container: Annotated[Container, Depends(get_container)],
+    uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+):
+    use_case: GetUserPostsUseCase = container.resolve(GetUserPostsUseCase)
+    return ApiResponseSchema(
+        data=await use_case.execute(
+            uow=uow,
+            token=token,
+        ),
+    )
 
 
 @router.get(
@@ -40,6 +59,26 @@ async def get_posts(
     posts_service: AbstractPostService = container.resolve(AbstractPostService)
     return ApiResponseSchema(
         data=await posts_service.get_active_posts(uow),
+    )
+
+
+@router.get(
+    "/{post_id}",
+    response_model=ApiResponseSchema[ReadPostSchema],
+)
+async def get_post(
+    post_id: int,
+    container: Annotated[Container, Depends(get_container)],
+    uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+):
+    use_case: GetPostUseCase = container.resolve(GetPostUseCase)
+    return ApiResponseSchema(
+        data=await use_case.execute(
+            uow=uow,
+            post_id=post_id,
+            token=token,
+        ),
     )
 
 
@@ -97,22 +136,4 @@ async def delete_post(
         uow=uow,
         post_id=post_id,
         token=token,
-    )
-
-
-@router.get(
-    "/me",
-    response_model=ApiResponseSchema[list[ReadPostSchema]],
-)
-async def get_current_user_posts(
-    container: Annotated[Container, Depends(get_container)],
-    uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-):
-    use_case: GetUserPostsUseCase = container.resolve(GetUserPostsUseCase)
-    return ApiResponseSchema(
-        data=await use_case.execute(
-            uow=uow,
-            token=token,
-        ),
     )
