@@ -35,6 +35,20 @@ class AbstractCommentService(ABC):
         user_id: int,
     ) -> list[ReadCommentSchema]: ...
 
+    @abstractmethod
+    async def get_comment_by_id(
+        self,
+        uow: AbstractUnitOfWork,
+        comment_id: int,
+    ) -> ReadCommentSchema: ...
+
+    @abstractmethod
+    async def delete_comment_by_id(
+        self,
+        uow: AbstractUnitOfWork,
+        comment_id: int,
+    ) -> None: ...
+
 
 class CommentService(AbstractCommentService):
 
@@ -63,3 +77,17 @@ class CommentService(AbstractCommentService):
         comment_in: BaseCommentSchema,
     ) -> ReadCommentSchema:
         return await uow.comments.create(item_in=comment_in)
+
+    async def get_comment_by_id(
+        self,
+        uow: AbstractUnitOfWork,
+        comment_id: int,
+    ) -> ReadCommentSchema:
+        return await uow.comments.fetch_by_id(item_id=comment_id)
+
+    async def delete_comment_by_id(
+        self,
+        uow: AbstractUnitOfWork,
+        comment_id: int,
+    ) -> None:
+        return await uow.comments.remove_by_id(item_id=comment_id)

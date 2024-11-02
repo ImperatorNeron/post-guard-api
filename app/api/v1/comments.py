@@ -17,6 +17,7 @@ from app.schemas.comments import (
 from app.use_cases.comments.comments_by_post import GetCommentsByPostUseCase
 from app.use_cases.comments.create import CreateCommentUseCase
 from app.use_cases.comments.current_user_comments import GetUserCommentsUseCase
+from app.use_cases.comments.delete import DeleteCommentUseCase
 from app.utils.unit_of_work import (
     AbstractUnitOfWork,
     UnitOfWork,
@@ -81,4 +82,19 @@ async def get_current_user_comments(
             uow=uow,
             token=token,
         ),
+    )
+
+
+@router.delete("/{comment_id}")
+async def delete_current_user_comments(
+    comment_id: int,
+    container: Annotated[Container, Depends(get_container)],
+    uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+):
+    use_case: DeleteCommentUseCase = container.resolve(DeleteCommentUseCase)
+    await use_case.execute(
+        uow=uow,
+        token=token,
+        comment_id=comment_id,
     )

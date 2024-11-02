@@ -31,6 +31,7 @@ from app.use_cases.auth.registration import RegisterUserUseCase
 from app.use_cases.comments.comments_by_post import GetCommentsByPostUseCase
 from app.use_cases.comments.create import CreateCommentUseCase
 from app.use_cases.comments.current_user_comments import GetUserCommentsUseCase
+from app.use_cases.comments.delete import DeleteCommentUseCase
 from app.use_cases.posts.create import CreatePostUseCase
 from app.use_cases.posts.current_user_posts import GetUserPostsUseCase
 from app.use_cases.posts.delete import DeletePostUseCase
@@ -65,5 +66,6 @@ def _initialize_container() -> punq.Container:
     container.register(GetCommentsByPostUseCase)
     container.register(CreateCommentUseCase)
     container.register(GetUserCommentsUseCase)
+    container.register(DeleteCommentUseCase)
 
     return container
