@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import (
     BaseModel,
@@ -59,6 +60,11 @@ class RegisterUserSchema(BaseUserSchema):
 
 class CreateUserSchema(BaseUserSchema):
     hashed_password: bytes
+
+
+class UpdateUserSchema(BaseModel):
+    is_auto_reply_enabled: Optional[bool] = None
+    auto_reply_delay: Optional[int] = None
 
 
 class LoginUserSchema(BaseModel):

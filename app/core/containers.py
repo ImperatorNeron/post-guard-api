@@ -40,6 +40,7 @@ from app.use_cases.posts.delete import DeletePostUseCase
 from app.use_cases.posts.get_post import GetPostUseCase
 from app.use_cases.posts.update import UpdatePostUseCase
 from app.use_cases.users.personal_profile import GetCurrentUserProfileUseCase
+from app.use_cases.users.update import UpdateUserProfileUseCase
 
 
 @lru_cache(1)
@@ -61,6 +62,7 @@ def _initialize_container() -> punq.Container:
     # Use cases
     container.register(RegisterUserUseCase)
     container.register(LoginUserUseCase)
+    container.register(UpdateUserProfileUseCase)
     container.register(GetCurrentUserProfileUseCase)
     container.register(CreatePostUseCase)
     container.register(DeletePostUseCase)
