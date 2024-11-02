@@ -26,7 +26,14 @@ class AbstractCommentService(ABC):
         self,
         uow: AbstractUnitOfWork,
         comment_in: BaseModel,
-    ) -> BaseModel: ...
+    ) -> ReadCommentSchema: ...
+
+    @abstractmethod
+    async def get_user_comments(
+        self,
+        uow: AbstractUnitOfWork,
+        user_id: int,
+    ) -> list[ReadCommentSchema]: ...
 
 
 class CommentService(AbstractCommentService):
@@ -39,6 +46,15 @@ class CommentService(AbstractCommentService):
         return await uow.comments.fetch_by_attributes(
             post_id=post_id,
             is_blocked=False,
+        )
+
+    async def get_user_comments(
+        self,
+        uow: AbstractUnitOfWork,
+        user_id: int,
+    ) -> list[ReadCommentSchema]:
+        return await uow.comments.fetch_by_attributes(
+            user_id=user_id,
         )
 
     async def create_comment(

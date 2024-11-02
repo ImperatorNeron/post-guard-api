@@ -16,6 +16,7 @@ from app.schemas.comments import (
 )
 from app.use_cases.comments.comments_by_post import GetCommentsByPostUseCase
 from app.use_cases.comments.create import CreateCommentUseCase
+from app.use_cases.comments.current_user_comments import GetUserCommentsUseCase
 from app.utils.unit_of_work import (
     AbstractUnitOfWork,
     UnitOfWork,
@@ -26,7 +27,7 @@ router = APIRouter(prefix="/comments", tags=["Comments"])
 
 
 @router.get(
-    "/{post_id}",
+    "/post/{post_id}",
     response_model=ApiResponseSchema[list[ReadCommentSchema]],
 )
 async def get_comments_by_post_id(
@@ -44,7 +45,7 @@ async def get_comments_by_post_id(
 
 
 @router.post(
-    "/{post_id}",
+    "/post/{post_id}",
     response_model=ApiResponseSchema[ReadCommentSchema],
 )
 async def create_comment(
@@ -60,6 +61,24 @@ async def create_comment(
             uow=uow,
             post_id=post_id,
             comment_in=comment_in,
+            token=token,
+        ),
+    )
+
+
+@router.get(
+    "/me",
+    response_model=ApiResponseSchema[list[ReadCommentSchema]],
+)
+async def get_current_user_comments(
+    container: Annotated[Container, Depends(get_container)],
+    uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+):
+    use_case: GetUserCommentsUseCase = container.resolve(GetUserCommentsUseCase)
+    return ApiResponseSchema(
+        data=await use_case.execute(
+            uow=uow,
             token=token,
         ),
     )
