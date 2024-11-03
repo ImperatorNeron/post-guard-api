@@ -1,5 +1,8 @@
 from dataclasses import dataclass
+from datetime import timedelta
+from typing import Optional
 
+from app.core.settings import settings
 from app.exceptions.auth import InvalidCredentialsError
 from app.exceptions.users import UserWasNotFoundError
 from app.schemas.tokens import TokenInfoSchema
@@ -43,17 +46,58 @@ class LoginUserUseCase:
             hashed_password=hashed_password,
         )
 
-    async def __generate_token(
+    async def __generate_tokens_info(
         self,
         pk: int,
         username: str,
     ) -> TokenInfoSchema:
-        payload = {"sub": pk, "username": username}
-        token = await self.token_service.encode_jwt(payload=payload)
 
         return TokenInfoSchema(
-            access_token=token,
-            token_type="Bearer",
+            access_token=await self.__generate_access_token(
+                pk=pk,
+                username=username,
+            ),
+            refresh_token=await self.__generate_refresh_token(pk=pk),
+        )
+
+    async def __generate_refresh_token(
+        self,
+        pk: int,
+    ) -> str:
+        return await self.__generate_jwt(
+            token_data={"sub": pk},
+            token_type="refresh",
+            expire_timedelta=timedelta(
+                days=settings.auth_jwt.refresh_token_expire_days,
+            ),
+        )
+
+    async def __generate_access_token(
+        self,
+        pk: int,
+        username: str,
+    ) -> str:
+        return await self.__generate_jwt(
+            token_data={"sub": pk, "username": username},
+            token_type="access",
+            expire_minutes=settings.auth_jwt.access_token_expire_minutes,
+        )
+
+    async def __generate_jwt(
+        self,
+        token_type: str,
+        token_data: dict,
+        expire_minutes: int = settings.auth_jwt.access_token_expire_minutes,
+        expire_timedelta: Optional[timedelta] = None,
+    ) -> str:
+
+        payload = {"token_type": token_type}
+        payload.update(token_data)
+
+        return await self.token_service.encode_jwt(
+            payload=payload,
+            expire_minutes=expire_minutes,
+            expire_timedelta=expire_timedelta,
         )
 
     async def execute(
@@ -73,7 +117,7 @@ class LoginUserUseCase:
             ):
                 raise InvalidCredentialsError()
 
-            return await self.__generate_token(
+            return await self.__generate_tokens_info(
                 pk=user.id,
                 username=user.username,
             )
