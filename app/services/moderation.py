@@ -8,7 +8,7 @@ from openai import AsyncOpenAI
 
 from app.core.settings import settings
 from app.exceptions.moderation import ModerationResponseError
-from app.utils.system_prompt import SYSTEM_PROMPT
+from app.utils.prompts.moderate_system_prompt import MODERATE_SYSTEM_PROMPT
 
 
 class AbstractModerationService(ABC):
@@ -17,7 +17,7 @@ class AbstractModerationService(ABC):
     async def check_content(self, *args) -> dict: ...
 
     @abstractmethod
-    async def get_moderation_result(content: str) -> dict: ...
+    async def prompt(content: str, system_content: str) -> dict: ...
 
 
 class AIModerationService(AbstractModerationService):
@@ -27,7 +27,7 @@ class AIModerationService(AbstractModerationService):
 
     async def check_content(self, *args) -> dict | None:
         full_content = "\n".join(filter(None, args))
-        response = await self.get_moderation_result(full_content)
+        response = await self.prompt(full_content)
         return await self.parse_response(response)
 
     async def parse_response(self, response_text: str) -> dict | None:
@@ -42,11 +42,15 @@ class AIModerationService(AbstractModerationService):
                 "blocked_reason": moderation_result["blocked_reason"],
             }
 
-    async def get_moderation_result(self, content: str) -> str:
+    async def prompt(
+        self,
+        content: str,
+        system_content: str = MODERATE_SYSTEM_PROMPT,
+    ) -> str:
         response = await self.client.chat.completions.create(
             model=settings.chat_gpt.model,
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": system_content},
                 {"role": "user", "content": content},
             ],
         )

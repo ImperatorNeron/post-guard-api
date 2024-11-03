@@ -1,3 +1,6 @@
+from fastapi import BackgroundTasks
+
+from app.background_tasks.auto_reply_comment_task import auto_reply_comment
 from app.exceptions.comments import CommentBlockedPostError
 from app.exceptions.posts import PostNotFoundError
 from app.schemas.comments import CreateCommentSchema
@@ -14,6 +17,7 @@ class CreateCommentUseCase(BaseCommentUseCase):
         comment_in: CreateCommentSchema,
         post_id: int,
         payload: dict,
+        background_tasks: BackgroundTasks,
     ):
         post: ReadPostSchema = await self.post_service.get_post_by_id(
             uow=uow,
@@ -32,7 +36,20 @@ class CreateCommentUseCase(BaseCommentUseCase):
             user_id=payload.get("sub"),
         )
 
-        return await self.comment_service.create_comment(
+        created_comment = await self.comment_service.create_comment(
             uow=uow,
             comment_in=new_comment,
         )
+
+        user = await self.user_service.get_user_by_id(uow=uow, id=post.user_id)
+
+        if user.is_auto_reply_enabled and not created_comment.is_blocked:
+            background_tasks.add_task(
+                auto_reply_comment,
+                uow,
+                user,
+                created_comment,
+                post,
+            )
+
+        return created_comment

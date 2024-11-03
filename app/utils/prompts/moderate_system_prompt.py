@@ -1,4 +1,4 @@
-SYSTEM_PROMPT = """
+MODERATE_SYSTEM_PROMPT = """
 You are an AI moderation service that checks content in any language for focusing on profanity, threats, and severe insults.
 Please analyze the provided content and determine whether it should be blocked based on the following criteria:
 1. Explicit profanity or vulgar language.

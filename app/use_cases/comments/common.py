@@ -12,6 +12,7 @@ from app.schemas.comments import (
 from app.services.comments import AbstractCommentService
 from app.services.moderation import AbstractModerationService
 from app.services.posts import AbstractPostService
+from app.services.users import AbstractUserService
 
 
 @dataclass
@@ -20,6 +21,7 @@ class BaseCommentUseCase:
     post_service: AbstractPostService
     comment_service: AbstractCommentService
     moderation_service: AbstractModerationService
+    user_service: AbstractUserService
 
     async def _get_moderated_comment(
         self,

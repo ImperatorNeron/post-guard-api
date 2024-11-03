@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import (
     APIRouter,
+    BackgroundTasks,
     Depends,
 )
 
@@ -53,6 +54,7 @@ async def get_comments_by_post_id(
 )
 async def create_comment(
     post_id: int,
+    background_tasks: BackgroundTasks,
     comment_in: CreateCommentSchema,
     container: Annotated[Container, Depends(get_container)],
     uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
@@ -65,6 +67,7 @@ async def create_comment(
             post_id=post_id,
             comment_in=comment_in,
             payload=payload,
+            background_tasks=background_tasks,
         ),
     )
 
