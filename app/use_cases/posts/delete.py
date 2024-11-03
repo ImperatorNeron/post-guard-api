@@ -17,19 +17,17 @@ class DeletePostUseCase:
         self,
         uow: AbstractUnitOfWork,
         post_id: int,
-        token: str,
+        payload: dict,
     ):
-        payload = await self.token_service.decode_jwt(token=token)
-        pk = payload.get("sub")
+        post: ReadPostSchema = await self.post_service.get_post_by_id(
+            post_id=post_id,
+            uow=uow,
+        )
 
-        async with uow:
-            post: ReadPostSchema = await self.post_service.get_post_by_id(
-                post_id=post_id,
-                uow=uow,
-            )
-            if post is None or post.user_id != pk:
-                raise PostNotFoundError(post_id=post_id)
-            await self.post_service.delete_post_by_id(
-                post_id=post_id,
-                uow=uow,
-            )
+        if post is None or post.user_id != payload.get("sub"):
+            raise PostNotFoundError(post_id=post_id)
+
+        await self.post_service.delete_post_by_id(
+            post_id=post_id,
+            uow=uow,
+        )

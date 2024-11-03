@@ -17,7 +17,7 @@ class AbstractModerationService(ABC):
 class AIModerationService(AbstractModerationService):
 
     async def check_content(self, *args) -> dict:
-        full_content = "\n".join(args)
+        full_content = "\n".join(filter(None, args))
         return await self.get_moderation_result(full_content)
 
     async def get_moderation_result(self, content: str) -> dict:

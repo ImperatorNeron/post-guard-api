@@ -47,6 +47,7 @@ class Post(
     user: Mapped["User"] = relationship("User", back_populates="posts")
     comments: Mapped[list["Comment"]] = relationship(
         "Comment",
+        cascade="all, delete",
         back_populates="post",
     )
 

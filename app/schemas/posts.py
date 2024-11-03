@@ -23,7 +23,7 @@ class CreatePostWithUserSchema(BasePostSchema):
     )
 
 
-class UpdatePostSchema(BasePostSchema):
+class UpdatePostSchema(BaseModel):
     title: Optional[str] = None
     content: Optional[str] = None
 
@@ -41,6 +41,13 @@ class ModeratePostSchema(BasePostSchema):
         default=None,
         title="Reason for blocking the post",
     )
+
+
+class UpdateModeratePostSchema(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    is_blocked: Optional[bool] = None
+    blocked_reason: Optional[str] = None
 
 
 class ReadPostSchema(ModeratePostSchema):

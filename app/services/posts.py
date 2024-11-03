@@ -65,14 +65,16 @@ class PostService(AbstractPostService):
         post_id: int,
         uow: AbstractUnitOfWork,
     ) -> ReadPostSchema:
-        return await uow.posts.fetch_by_id(post_id)
+        async with uow:
+            return await uow.posts.fetch_by_id(post_id)
 
     async def get_posts_by_user_id(
         self,
         user_id: int,
         uow: AbstractUnitOfWork,
     ) -> list[ReadPostSchema]:
-        return await uow.posts.fetch_by_attributes(user_id=user_id)
+        async with uow:
+            return await uow.posts.fetch_by_attributes(user_id=user_id)
 
     async def get_active_posts(
         self,
@@ -86,7 +88,8 @@ class PostService(AbstractPostService):
         uow: AbstractUnitOfWork,
         post_in: CreatePostWithUserSchema,
     ) -> ReadPostSchema:
-        return await uow.posts.create(item_in=post_in)
+        async with uow:
+            return await uow.posts.create(item_in=post_in)
 
     async def delete_post_by_id(
         self,
@@ -102,7 +105,8 @@ class PostService(AbstractPostService):
         post_in: UpdatePostSchema,
         uow: AbstractUnitOfWork,
     ) -> ReadPostSchema:
-        return await uow.posts.update_by_id(
-            item_id=post_id,
-            item_in=post_in,
-        )
+        async with uow:
+            return await uow.posts.update_by_id(
+                item_id=post_id,
+                item_in=post_in,
+            )
