@@ -27,6 +27,7 @@ from app.services.users import (
     UserService,
 )
 from app.use_cases.auth.login import LoginUserUseCase
+from app.use_cases.auth.refresh import RefreshTokenUseCase
 from app.use_cases.auth.registration import RegisterUserUseCase
 from app.use_cases.comments.comment_analytics import GetCurrentUserCommentsAnalyticsUseCase
 from app.use_cases.comments.comments_by_post import GetCommentsByPostUseCase
@@ -39,8 +40,6 @@ from app.use_cases.posts.current_user_posts import GetUserPostsUseCase
 from app.use_cases.posts.delete import DeletePostUseCase
 from app.use_cases.posts.get_post import GetPostUseCase
 from app.use_cases.posts.update import UpdatePostUseCase
-from app.use_cases.users.personal_profile import GetCurrentUserProfileUseCase
-from app.use_cases.users.update import UpdateUserProfileUseCase
 
 
 @lru_cache(1)
@@ -62,8 +61,7 @@ def _initialize_container() -> punq.Container:
     # Use cases
     container.register(RegisterUserUseCase)
     container.register(LoginUserUseCase)
-    container.register(UpdateUserProfileUseCase)
-    container.register(GetCurrentUserProfileUseCase)
+    container.register(RefreshTokenUseCase)
     container.register(CreatePostUseCase)
     container.register(DeletePostUseCase)
     container.register(GetUserPostsUseCase)

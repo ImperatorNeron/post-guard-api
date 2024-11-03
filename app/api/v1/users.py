@@ -7,14 +7,16 @@ from fastapi import (
 
 from punq import Container
 
-from app.api.v1.dependencies import oauth2_scheme
+from app.api.v1.dependencies import (
+    get_current_active_auth_user,
+    get_current_token_payload,
+)
 from app.core.containers import get_container
 from app.schemas.users import (
     ReadUserSchema,
     UpdateUserSchema,
 )
-from app.use_cases.users.personal_profile import GetCurrentUserProfileUseCase
-from app.use_cases.users.update import UpdateUserProfileUseCase
+from app.services.users import AbstractUserService
 from app.utils.unit_of_work import (
     AbstractUnitOfWork,
     UnitOfWork,
@@ -32,15 +34,13 @@ async def update_user_profile(
     user_in: UpdateUserSchema,
     container: Annotated[Container, Depends(get_container)],
     uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
-    token: Annotated[str, Depends(oauth2_scheme)],
+    payload: Annotated[dict, Depends(get_current_token_payload)],
 ):
-    use_case: UpdateUserProfileUseCase = container.resolve(
-        UpdateUserProfileUseCase,
-    )
-    return await use_case.execute(
-        token=token,
-        uow=uow,
+    service: AbstractUserService = container.resolve(AbstractUserService)
+    return await service.update_user(
+        user_id=payload.get("sub"),
         user_in=user_in,
+        uow=uow,
     )
 
 
@@ -49,14 +49,6 @@ async def update_user_profile(
     response_model=ReadUserSchema,
 )
 async def get_authenticated_user_profile(
-    container: Annotated[Container, Depends(get_container)],
-    uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
-    token: Annotated[str, Depends(oauth2_scheme)],
+    user: Annotated[ReadUserSchema, Depends(get_current_active_auth_user)],
 ):
-    use_case: GetCurrentUserProfileUseCase = container.resolve(
-        GetCurrentUserProfileUseCase,
-    )
-    return await use_case.execute(
-        token=token,
-        uow=uow,
-    )
+    return user

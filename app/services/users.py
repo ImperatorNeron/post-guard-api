@@ -51,7 +51,8 @@ class UserService(AbstractUserService):
         uow: AbstractUnitOfWork,
         id: int,  # noqa
     ) -> ReadUserSchema:
-        return await uow.users.fetch_by_id(item_id=id)
+        async with uow:
+            return await uow.users.fetch_by_id(item_id=id)
 
     async def update_user(
         self,
@@ -59,7 +60,8 @@ class UserService(AbstractUserService):
         user_id: int,
         user_in: UpdateUserSchema,
     ) -> ReadUserSchema:
-        return await uow.users.update_by_id(
-            item_id=user_id,
-            item_in=user_in,
-        )
+        async with uow:
+            return await uow.users.update_by_id(
+                item_id=user_id,
+                item_in=user_in,
+            )

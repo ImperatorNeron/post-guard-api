@@ -5,8 +5,16 @@ from fastapi import (
 
 
 class UserWasNotFoundError(HTTPException):
-    def __init__(self):
+    def __init__(self, detail="User wasn`t found."):
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="User wasn`t found.",
+            detail=detail,
+        )
+
+
+class InactiveUserError(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User is inactive.",
         )
