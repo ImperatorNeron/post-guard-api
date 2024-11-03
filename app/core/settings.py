@@ -50,6 +50,11 @@ class AuthJWT(BaseModel):
     refresh_token_expire_days: int = 30
 
 
+class ChatGPTSettings(BaseModel):
+    api_key: str
+    model: str
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -60,6 +65,7 @@ class Settings(BaseSettings):
     api_version_prefix: str = "/api/v1"
     database: DatabaseSettings
     auth_jwt: AuthJWT = AuthJWT()
+    chat_gpt: ChatGPTSettings
 
 
 settings = Settings()

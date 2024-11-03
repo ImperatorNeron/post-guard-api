@@ -12,7 +12,6 @@ class CommentBlockedPostError(HTTPException):
         )
 
 
-# CommentBlockedError
 class CommentNotFoundError(HTTPException):
     def __init__(self, comment_id: int):
         super().__init__(
