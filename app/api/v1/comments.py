@@ -1,7 +1,4 @@
-from typing import (
-    Annotated,
-    Optional,
-)
+from typing import Annotated
 
 from fastapi import (
     APIRouter,
@@ -10,7 +7,7 @@ from fastapi import (
 
 from punq import Container
 
-from app.api.v1.dependencies import oauth2_scheme
+from app.api.v1.dependencies import get_current_token_payload
 from app.core.containers import get_container
 from app.schemas.api_response import ApiResponseSchema
 from app.schemas.comments import (
@@ -21,7 +18,6 @@ from app.schemas.comments import (
 from app.services.comments import AbstractCommentService
 from app.use_cases.comments.comments_by_post import GetCommentsByPostUseCase
 from app.use_cases.comments.create import CreateCommentUseCase
-from app.use_cases.comments.current_user_comments import GetUserCommentsUseCase
 from app.use_cases.comments.delete import DeleteCommentUseCase
 from app.use_cases.comments.update import UpdateCommentUseCase
 from app.utils.unit_of_work import (
@@ -34,7 +30,7 @@ router = APIRouter(prefix="/comments", tags=["Comments"])
 
 
 @router.get(
-    "/post/{post_id}",
+    "/posts/{post_id}",
     response_model=ApiResponseSchema[list[ReadCommentSchema]],
 )
 async def get_comments_by_post_id(
@@ -52,16 +48,15 @@ async def get_comments_by_post_id(
 
 
 @router.post(
-    "/post/{post_id}",
+    "/posts/{post_id}",
     response_model=ApiResponseSchema[ReadCommentSchema],
 )
 async def create_comment(
     post_id: int,
     comment_in: CreateCommentSchema,
-    parent_comment_id: Annotated[Optional[int], None],
     container: Annotated[Container, Depends(get_container)],
     uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
-    token: Annotated[str, Depends(oauth2_scheme)],
+    payload: Annotated[dict, Depends(get_current_token_payload)],
 ):
     use_case: CreateCommentUseCase = container.resolve(CreateCommentUseCase)
     return ApiResponseSchema(
@@ -69,14 +64,13 @@ async def create_comment(
             uow=uow,
             post_id=post_id,
             comment_in=comment_in,
-            token=token,
-            parent_comment_id=parent_comment_id,
+            payload=payload,
         ),
     )
 
 
 @router.get(
-    "/reply/{parent_comment_id}",
+    "/{parent_comment_id}/replies/",
     response_model=ApiResponseSchema[list[ReadCommentSchema]],
 )
 async def get_comments_by_parent_comment_id(
@@ -94,19 +88,19 @@ async def get_comments_by_parent_comment_id(
 
 
 @router.get(
-    "/me",
+    "/my",
     response_model=ApiResponseSchema[list[ReadCommentSchema]],
 )
 async def get_current_user_comments(
     container: Annotated[Container, Depends(get_container)],
     uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
-    token: Annotated[str, Depends(oauth2_scheme)],
+    payload: Annotated[dict, Depends(get_current_token_payload)],
 ):
-    use_case: GetUserCommentsUseCase = container.resolve(GetUserCommentsUseCase)
+    service: AbstractCommentService = container.resolve(AbstractCommentService)
     return ApiResponseSchema(
-        data=await use_case.execute(
+        data=await service.get_user_comments(
             uow=uow,
-            token=token,
+            user_id=payload.get("sub"),
         ),
     )
 
@@ -120,13 +114,13 @@ async def update_current_user_comments(
     comment_in: UpdateCommentSchema,
     container: Annotated[Container, Depends(get_container)],
     uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
-    token: Annotated[str, Depends(oauth2_scheme)],
+    payload: Annotated[dict, Depends(get_current_token_payload)],
 ):
     use_case: UpdateCommentUseCase = container.resolve(UpdateCommentUseCase)
     return ApiResponseSchema(
         data=await use_case.execute(
             uow=uow,
-            token=token,
+            payload=payload,
             comment_in=comment_in,
             comment_id=comment_id,
         ),
@@ -138,11 +132,11 @@ async def delete_current_user_comments(
     comment_id: int,
     container: Annotated[Container, Depends(get_container)],
     uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
-    token: Annotated[str, Depends(oauth2_scheme)],
+    payload: Annotated[dict, Depends(get_current_token_payload)],
 ):
     use_case: DeleteCommentUseCase = container.resolve(DeleteCommentUseCase)
     await use_case.execute(
         uow=uow,
-        token=token,
+        payload=payload,
         comment_id=comment_id,
     )

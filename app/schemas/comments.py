@@ -13,11 +13,17 @@ class BaseCommentSchema(BaseModel):
 
 
 class CreateCommentSchema(BaseCommentSchema):
-    pass
+    parent_comment_id: Optional[int] = None
 
 
 class UpdateCommentSchema(BaseModel):
     content: Optional[str] = None
+
+
+class UpdateModerateCommentSchema(BaseModel):
+    content: Optional[str] = None
+    is_blocked: Optional[bool] = None
+    blocked_reason: Optional[str] = None
 
 
 class CreateCommentByPostSchema(CreateCommentSchema):

@@ -8,12 +8,11 @@ from fastapi import (
 
 from punq import Container
 
-from app.api.v1.dependencies import oauth2_scheme
+from app.api.v1.dependencies import get_current_token_payload
 from app.core.containers import get_container
 from app.schemas.analytics import CommentAnalyticSchema
 from app.schemas.api_response import ApiResponseSchema
 from app.services.comments import AbstractCommentService
-from app.use_cases.comments.comment_analytics import GetCurrentUserCommentsAnalyticsUseCase
 from app.utils.unit_of_work import (
     AbstractUnitOfWork,
     UnitOfWork,
@@ -52,16 +51,14 @@ async def get_current_user_comments_daily_breakdown(
     date_to: datetime,
     container: Annotated[Container, Depends(get_container)],
     uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
-    token: Annotated[str, Depends(oauth2_scheme)],
+    payload: Annotated[dict, Depends(get_current_token_payload)],
 ):
-    use_case: GetCurrentUserCommentsAnalyticsUseCase = container.resolve(
-        GetCurrentUserCommentsAnalyticsUseCase,
-    )
+    service: AbstractCommentService = container.resolve(AbstractCommentService)
     return ApiResponseSchema(
-        data=await use_case.execute(
+        data=await service.get_comments_daily_breakdown(
             uow=uow,
             date_from=date_from,
             date_to=date_to,
-            token=token,
+            user_id=payload.get("sub"),
         ),
     )

@@ -84,33 +84,37 @@ class CommentService(AbstractCommentService):
         uow: AbstractUnitOfWork,
         post_id: int,
     ) -> list[ReadCommentSchema]:
-        return await uow.comments.fetch_by_attributes(
-            post_id=post_id,
-            is_blocked=False,
-        )
+        async with uow:
+            return await uow.comments.fetch_by_attributes(
+                post_id=post_id,
+                is_blocked=False,
+            )
 
     async def get_user_comments(
         self,
         uow: AbstractUnitOfWork,
         user_id: int,
     ) -> list[ReadCommentSchema]:
-        return await uow.comments.fetch_by_attributes(
-            user_id=user_id,
-        )
+        async with uow:
+            return await uow.comments.fetch_by_attributes(
+                user_id=user_id,
+            )
 
     async def create_comment(
         self,
         uow: AbstractUnitOfWork,
         comment_in: BaseCommentSchema,
     ) -> ReadCommentSchema:
-        return await uow.comments.create(item_in=comment_in)
+        async with uow:
+            return await uow.comments.create(item_in=comment_in)
 
     async def get_comment_by_id(
         self,
         uow: AbstractUnitOfWork,
         comment_id: int,
     ) -> ReadCommentSchema:
-        return await uow.comments.fetch_by_id(item_id=comment_id)
+        async with uow:
+            return await uow.comments.fetch_by_id(item_id=comment_id)
 
     async def update_comment_by_id(
         self,
@@ -128,7 +132,8 @@ class CommentService(AbstractCommentService):
         uow: AbstractUnitOfWork,
         comment_id: int,
     ) -> None:
-        await uow.comments.remove_by_id(item_id=comment_id)
+        async with uow:
+            await uow.comments.remove_by_id(item_id=comment_id)
 
     async def get_comments_daily_breakdown(
         self,
