@@ -11,6 +11,8 @@ from app.repositories.users import UserRepository
 
 
 class AbstractUnitOfWork(ABC):
+    """Abstract base class defining a unit of work pattern for managing
+    repositories and database transactions."""
 
     users: Type[UserRepository]
     posts: Type[PostRepository]
@@ -30,6 +32,8 @@ class AbstractUnitOfWork(ABC):
 
 
 class UnitOfWork(AbstractUnitOfWork):
+    """Implementation of the UnitOfWork pattern."""
+
     async def __aenter__(self):
         self.session = database_helper.session_factory()
         self.users = UserRepository(session=self.session)
