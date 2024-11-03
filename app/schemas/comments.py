@@ -27,6 +27,7 @@ class CreateCommentByPostSchema(CreateCommentSchema):
     post_id: PositiveInt = Field(
         title="ID of the post the comment is associated with",
     )
+    parent_comment_id: Optional[int] = None
 
 
 class ModerateCommentSchema(BaseCommentSchema):
@@ -45,6 +46,7 @@ class ModerateCommentSchema(BaseCommentSchema):
         max_length=255,
         title="Reason for blocking the comment",
     )
+    parent_comment_id: Optional[int] = None
 
 
 class ReadCommentSchema(BaseCommentSchema):
@@ -70,3 +72,4 @@ class ReadCommentSchema(BaseCommentSchema):
     updated_at: datetime = Field(
         title="Timestamp when the comment was last updated",
     )
+    parent_comment_id: Optional[int] = None

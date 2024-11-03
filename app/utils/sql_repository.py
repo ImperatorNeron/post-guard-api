@@ -191,6 +191,7 @@ class SQLAlchemyRepository(AbstractRepository):
     async def create(self, item_in: BaseModel) -> BaseModel:
         stmt = insert(self.model).values(**item_in.model_dump()).returning(self.model)
         result: Result = await self.session.execute(stmt)
+        await self.session.commit()
         item = result.scalars().first()
         return item.to_read_model()
 
@@ -207,9 +208,11 @@ class SQLAlchemyRepository(AbstractRepository):
         )
 
         result: Result = await self.session.execute(stmt)
+        await self.session.commit()
         updated_item: Model = result.scalars().first()
         return updated_item.to_read_model() if updated_item else None
 
     async def remove_by_id(self, item_id: int) -> None:
         stmt = delete(self.model).where(self.model.id == item_id)
         await self.session.execute(stmt)
+        await self.session.commit()

@@ -1,4 +1,7 @@
-from typing import Annotated
+from typing import (
+    Annotated,
+    Optional,
+)
 
 from fastapi import (
     APIRouter,
@@ -54,6 +57,7 @@ async def get_comments_by_post_id(
 async def create_comment(
     post_id: int,
     comment_in: CreateCommentSchema,
+    parent_comment_id: Annotated[Optional[int], None],
     container: Annotated[Container, Depends(get_container)],
     uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
     token: Annotated[str, Depends(oauth2_scheme)],
@@ -65,6 +69,7 @@ async def create_comment(
             post_id=post_id,
             comment_in=comment_in,
             token=token,
+            parent_comment_id=parent_comment_id,
         ),
     )
 

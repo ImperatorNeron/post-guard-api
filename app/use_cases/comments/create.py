@@ -29,6 +29,7 @@ class CreateCommentUseCase:
         comment_in: CreateCommentSchema,
         post_id: int,
         token: str,
+        parent_comment_id: int = None,
     ):
         payload = await self.token_service.decode_jwt(token=token)
         pk = payload.get("sub")
@@ -53,12 +54,14 @@ class CreateCommentUseCase:
                     **moderation_result,
                     user_id=pk,
                     post_id=post_id,
+                    parent_comment_id=parent_comment_id,
                 )
             else:
                 comment = CreateCommentByPostSchema(
                     **comment_in.model_dump(),
                     user_id=pk,
                     post_id=post_id,
+                    parent_comment_id=parent_comment_id,
                 )
             return await self.comment_service.create_comment(
                 uow=uow,

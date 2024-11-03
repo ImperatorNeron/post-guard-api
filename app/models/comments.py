@@ -1,4 +1,7 @@
-from typing import TYPE_CHECKING
+from typing import (
+    Optional,
+    TYPE_CHECKING,
+)
 
 from sqlalchemy import (
     Boolean,
@@ -43,9 +46,23 @@ class Comment(
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     post_id: Mapped[int] = mapped_column(ForeignKey("posts.id"))
+    parent_comment_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("comments.id"),
+        nullable=True,
+    )
 
     user: Mapped["User"] = relationship("User", back_populates="comments")
     post: Mapped["Post"] = relationship("Post", back_populates="comments")
+    parent_comment: Mapped[Optional["Comment"]] = relationship(
+        "Comment",
+        remote_side="Comment.id",
+        back_populates="replies",
+    )
+    replies: Mapped[list["Comment"]] = relationship(
+        "Comment",
+        back_populates="parent_comment",
+        cascade="all, delete-orphan",
+    )
 
     def to_read_model(self):
         return ReadCommentSchema(
@@ -57,4 +74,5 @@ class Comment(
             blocked_reason=self.blocked_reason,
             user_id=self.user_id,
             post_id=self.post_id,
+            parent_comment_id=self.parent_comment_id,
         )
