@@ -1,8 +1,8 @@
 """dts
 
-Revision ID: d9a4c37935a4
+Revision ID: 61e4fd8f1f02
 Revises: 
-Create Date: 2024-11-03 16:15:28.034409
+Create Date: 2024-11-03 17:55:32.341766
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'd9a4c37935a4'
+revision: str = '61e4fd8f1f02'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -60,8 +60,8 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
-    sa.ForeignKeyConstraint(['parent_comment_id'], ['comments.id'], name=op.f('fk_comments_parent_comment_id_comments')),
-    sa.ForeignKeyConstraint(['post_id'], ['posts.id'], name=op.f('fk_comments_post_id_posts')),
+    sa.ForeignKeyConstraint(['parent_comment_id'], ['comments.id'], name=op.f('fk_comments_parent_comment_id_comments'), ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['post_id'], ['posts.id'], name=op.f('fk_comments_post_id_posts'), ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_comments_user_id_users')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_comments'))
     )

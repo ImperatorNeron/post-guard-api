@@ -45,9 +45,9 @@ class Comment(
     )
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    post_id: Mapped[int] = mapped_column(ForeignKey("posts.id"))
+    post_id: Mapped[int] = mapped_column(ForeignKey("posts.id", ondelete="CASCADE"))
     parent_comment_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("comments.id"),
+        ForeignKey("comments.id", ondelete="CASCADE"),
         nullable=True,
     )
 
