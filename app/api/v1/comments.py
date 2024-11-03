@@ -18,6 +18,7 @@ from app.schemas.comments import (
     ReadCommentSchema,
     UpdateCommentSchema,
 )
+from app.services.comments import AbstractCommentService
 from app.use_cases.comments.comments_by_post import GetCommentsByPostUseCase
 from app.use_cases.comments.create import CreateCommentUseCase
 from app.use_cases.comments.current_user_comments import GetUserCommentsUseCase
@@ -69,6 +70,24 @@ async def create_comment(
             post_id=post_id,
             comment_in=comment_in,
             token=token,
+            parent_comment_id=parent_comment_id,
+        ),
+    )
+
+
+@router.get(
+    "/reply/{parent_comment_id}",
+    response_model=ApiResponseSchema[list[ReadCommentSchema]],
+)
+async def get_comments_by_parent_comment_id(
+    parent_comment_id: int,
+    container: Annotated[Container, Depends(get_container)],
+    uow: Annotated[AbstractUnitOfWork, Depends(UnitOfWork)],
+):
+    service: AbstractCommentService = container.resolve(AbstractCommentService)
+    return ApiResponseSchema(
+        data=await service.get_comments_by_parent_comment_id(
+            uow=uow,
             parent_comment_id=parent_comment_id,
         ),
     )

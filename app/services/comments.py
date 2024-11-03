@@ -69,6 +69,13 @@ class AbstractCommentService(ABC):
         user_id: Optional[int] = None,
     ): ...
 
+    @abstractmethod
+    async def get_comments_by_parent_comment_id(
+        self,
+        uow: AbstractUnitOfWork,
+        parent_comment_id: Optional[int],
+    ) -> list[ReadCommentSchema]: ...
+
 
 class CommentService(AbstractCommentService):
 
@@ -135,4 +142,15 @@ class CommentService(AbstractCommentService):
                 date_from=date_from,
                 date_to=date_to,
                 user_id=user_id,
+            )
+
+    async def get_comments_by_parent_comment_id(
+        self,
+        uow: AbstractUnitOfWork,
+        parent_comment_id: Optional[int],
+    ) -> list[ReadCommentSchema]:
+        async with uow:
+            return await uow.comments.fetch_by_attributes(
+                parent_comment_id=parent_comment_id,
+                is_blocked=False,
             )
