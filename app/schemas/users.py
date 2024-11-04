@@ -10,36 +10,20 @@ from pydantic import (
 
 
 class BaseUserSchema(BaseModel):
-    email: EmailStr = Field(
-        max_length=255,
-        title="Email address of the user",
-    )
-    username: str = Field(
-        max_length=50,
-        title="Username of the user",
-    )
+    email: EmailStr = Field(max_length=255, title="Email address of the user")
+    username: str = Field(min_length=3, max_length=50, title="Username of the user")
 
 
 class ReadUserSchema(BaseUserSchema):
     id: PositiveInt  # noqa
-    is_active: bool = Field(
-        default=True,
-        title="Indicates if the user is active",
-    )
+    is_active: bool = Field(default=True, title="Indicates if the user is active")
     is_superuser: bool = Field(
         default=False,
         title="Indicates if the user is a superuser",
     )
-    is_verified: bool = Field(
-        default=False,
-        title="Indicates if the user is verified",
-    )
-    created_at: datetime = Field(
-        title="Timestamp when the post was created",
-    )
-    updated_at: datetime = Field(
-        title="Timestamp when the post was last updated",
-    )
+    is_verified: bool = Field(default=False, title="Indicates if the user is verified")
+    created_at: datetime = Field(None, title="Timestamp when the post was created")
+    updated_at: datetime = Field(None, title="Timestamp when the post was last updated")
     is_auto_reply_enabled: bool = Field(
         default=False,
         title="Indicates if auto-reply is enabled",
@@ -50,23 +34,33 @@ class ReadUserSchema(BaseUserSchema):
     )
 
 
-class ReadUserWithPasswordSchema(ReadUserSchema):
-    hashed_password: bytes
-
-
 class RegisterUserSchema(BaseUserSchema):
-    password: str
+    password: str = Field(
+        min_length=4,
+        max_length=255,
+        title="User's password for registration",
+    )
+
+
+class ReadUserWithPasswordSchema(ReadUserSchema):
+    hashed_password: bytes = Field(title="Hashed user's password")
 
 
 class CreateUserSchema(BaseUserSchema):
-    hashed_password: bytes
+    hashed_password: bytes = Field(title="Hashed user's password")
 
 
 class UpdateUserSchema(BaseModel):
-    is_auto_reply_enabled: Optional[bool] = None
-    auto_reply_delay: Optional[int] = None
+    is_auto_reply_enabled: Optional[bool] = Field(
+        None,
+        title="Enable or disable auto-reply",
+    )
+    auto_reply_delay: Optional[PositiveInt] = Field(
+        None,
+        title="Auto-reply delay in seconds",
+    )
 
 
 class LoginUserSchema(BaseModel):
-    username: str = Field(max_length=50)
-    password: str = Field(max_length=255)
+    username: str = Field(min_length=3, max_length=50, title="Username for login")
+    password: str = Field(min_length=4, max_length=255, title="Password for login")
