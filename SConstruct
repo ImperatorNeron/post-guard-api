@@ -22,7 +22,7 @@ ALDOWN = "alembic downgrade"
 
 
 def app(target, source, env):
-    command = f"{DC} -f {APP_FILE} -f {STORAGES_FILE} {ENV} up --build -d"
+    command = f"{DC} -f {APP_FILE} -f {STORAGES_FILE} -f {TEST_STORAGES_FILE} {ENV} up --build -d"
     return os.system(command)
 
 
@@ -32,21 +32,6 @@ def app_logs(target, source, env):
 
 
 def app_down(target, source, env):
-    command = f"{DC} -f {APP_FILE} -f {STORAGES_FILE} {ENV} down"
-    return os.system(command)
-
-
-def test_app(target, source, env):
-    command = f"{DC} -f {APP_FILE} -f {STORAGES_FILE} -f {TEST_STORAGES_FILE} {ENV} up --build -d"
-    return os.system(command)
-
-
-def test_app_logs(target, source, env):
-    command = f"{DL} {APP_CONTAINER} -f"
-    return os.system(command)
-
-
-def test_app_down(target, source, env):
     command = (
         f"{DC} -f {APP_FILE} -f {STORAGES_FILE} -f {TEST_STORAGES_FILE} {ENV} down"
     )
@@ -73,15 +58,10 @@ def migrate_down(target, source, env):
     return os.system(command)
 
 
-# Base app
+# App with test db
 Command("up", [], app)
 Command("down", [], app_down)
 Command("logs", [], app_logs)
-
-# App with test db
-Command("up-test", [], test_app)
-Command("down-test", [], test_app_down)
-Command("logs-test", [], test_app_logs)
 Command("run-tests", [], run_tests)
 
 # db
