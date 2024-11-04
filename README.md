@@ -17,7 +17,17 @@ git clone https://github.com/ImperatorNeron/post-guard-api.git
 cd your_repository
 ```
 2. Install all required packages in **Requirements** section.
-3. Set up environment variables. Create a .env file in the root directory and specify the required configurations. You can use .env.template
+3. Set up environment variables. Create a .env file in the root directory and specify the required configurations. You can use .env.template.
+4. Create folder ```certificates``` with ```private.pem``` and ```public.pem``` files in ```app``` for generating jwt tokens. For generating you can use 
+```bash
+# Generate an RSA private key, of size 2048
+openssl genrsa -out jwt-private.pem 2048
+# Extract the public key from the key pair, which can be used in a certificate
+openssl rsa -in jwt-private.pem -outform PEM -pubout -out jwt-public.pem
+```
+5. Create venv in ```app``` and do ```pip install scons```.
+6. Do ```scons up``` and than ```scons migrate-up```.
+7. Use project.
 
 ### Implemented Commands
 
@@ -25,11 +35,6 @@ cd your_repository
 - ```scons up``` - up application
 - ```scons logs``` - follow the logs in app container
 - ```scons down``` - down application and all 
-
-#### Application with database for tests
-- ```scons up-test``` - up application for tests
-- ```scons logs-test``` - follow the logs in test app container
-- ```scons down-test``` - down test application and all 
 - ```scons run-tests``` - run all tests 
 
 #### Database migrations
