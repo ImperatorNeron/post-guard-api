@@ -59,8 +59,7 @@ def run_tests(target, source, env):
 
 
 def auto_migrations(target, source, env):
-    message = env.get("message", "default")
-    command = f"{EXEC} {APP_CONTAINER} {ALREV} --autogenerate -m '{message}'"
+    command = f"{EXEC} {APP_CONTAINER} {ALREV} --autogenerate -m 'dts'"
     return os.system(command)
 
 
