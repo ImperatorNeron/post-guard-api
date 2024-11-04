@@ -40,7 +40,7 @@ class CommentRepository(SQLAlchemyRepository):
         """
 
         date_col = func.date(self.model.created_at).label("date")
-        created_count = func.sum(case((~self.model.is_blocked, 1), else_=0)).label(
+        created_count = func.sum(case((~self.model.is_blocked, 1), else_=1)).label(
             "created_count",
         )
         blocked_count = func.sum(case((self.model.is_blocked, 1), else_=0)).label(
