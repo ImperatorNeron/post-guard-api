@@ -39,3 +39,11 @@ database_helper = DatabaseHelper(
     pool_size=settings.database.pool_size,
     max_overflow=settings.database.max_overflow,
 )
+
+test_database_helper = DatabaseHelper(
+    url=str(settings.test_database.url),
+    echo=settings.test_database.echo,
+    echo_pool=settings.test_database.echo_pool,
+    pool_size=settings.test_database.pool_size,
+    max_overflow=settings.test_database.max_overflow,
+)

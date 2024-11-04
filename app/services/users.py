@@ -44,7 +44,8 @@ class UserService(AbstractUserService):
         uow: AbstractUnitOfWork,
         username: str,
     ) -> ReadUserSchema:
-        return await uow.users.fetch_one_by_attributes(username=username)
+        async with uow:
+            return await uow.users.fetch_one_by_attributes(username=username)
 
     async def get_user_by_id(
         self,
